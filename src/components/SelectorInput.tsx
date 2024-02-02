@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { generateTimeOptions } from "../util/time";
+import { generateTimeOptions } from "../util/workingHoursUtil";
 import { ChevronDown } from "lucide-react";
 
 type SelectorInputProps = {

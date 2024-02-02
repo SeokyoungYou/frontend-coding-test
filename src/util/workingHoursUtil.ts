@@ -34,3 +34,5 @@ export type DailyWorkingHours = {
   dayname: WeekDays;
   workingHours: WorkingHour[];
 };
+
+export const WORKING_HOURS_KEY = "workingHours";

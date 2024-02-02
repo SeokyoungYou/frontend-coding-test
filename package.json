@@ -10,6 +10,7 @@
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
     "jotai": "^2.6.4",
+    "lodash.isequal": "^4.5.0",
     "lucide-react": "^0.321.0",
     "postcss": "^8.4.33",
     "react": "^18.2.0",
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash.isequal": "^4.5.8",
     "@types/react-router-dom": "^5.3.3",
     "@types/uuid": "^9.0.8"
   }
