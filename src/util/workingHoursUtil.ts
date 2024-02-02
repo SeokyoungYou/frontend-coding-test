@@ -16,6 +16,7 @@ export type WorkingHour = {
   id: string;
   startTime: string;
   endTime: string;
+  isValid: boolean;
 };
 
 export enum WeekDays {
@@ -36,3 +37,9 @@ export type DailyWorkingHours = {
 };
 
 export const WORKING_HOURS_KEY = "workingHours";
+
+export const checkAllValid = (workingHours: DailyWorkingHours[]) => {
+  return workingHours.every((day) =>
+    day.workingHours.every((workingHour) => workingHour.isValid)
+  );
+};

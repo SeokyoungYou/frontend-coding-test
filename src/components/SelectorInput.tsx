@@ -5,9 +5,10 @@ import { ChevronDown } from "lucide-react";
 type SelectorInputProps = {
   time: string;
   setTime: (time: string) => void;
+  isError: boolean;
 };
 
-const SelectorInput: React.FC<SelectorInputProps> = ({ time, setTime }) => {
+function SelectorInput({ time, setTime, isError }: SelectorInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeOptions = generateTimeOptions();
@@ -30,7 +31,9 @@ const SelectorInput: React.FC<SelectorInputProps> = ({ time, setTime }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        className="py-2 px-3 rounded border border-gray-200 flex items-center gap-12"
+        className={`py-2 px-3 rounded border flex items-center gap-12 ${
+          isError ? "border-red-500 bg-red-50 " : "border-gray-200 "
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {time}
@@ -54,6 +57,6 @@ const SelectorInput: React.FC<SelectorInputProps> = ({ time, setTime }) => {
       )}
     </div>
   );
-};
+}
 
 export default SelectorInput;

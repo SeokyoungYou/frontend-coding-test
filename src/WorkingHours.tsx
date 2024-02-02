@@ -1,10 +1,17 @@
 import { ChevronDown, Plus, Trash2 } from "lucide-react";
 import RangeInput from "./components/RangeInput";
-import { initialWorkingHours, workingHoursAtom } from "./atom/workingHours";
+import {
+  createDefaultWorkingHour,
+  initialWorkingHours,
+  workingHoursAtom,
+} from "./atom/workingHours";
 
 import { useAtom } from "jotai";
-import { WORKING_HOURS_KEY, WeekDays } from "./util/workingHoursUtil";
-import { v4 as uuidv4 } from "uuid";
+import {
+  WORKING_HOURS_KEY,
+  WeekDays,
+  checkAllValid,
+} from "./util/workingHoursUtil";
 import { useResetAtom } from "jotai/utils";
 import isEqual from "lodash.isequal";
 
@@ -19,10 +26,7 @@ function WorkingHours() {
         day.dayname === dayName
           ? {
               ...day,
-              workingHours: [
-                ...day.workingHours,
-                { id: uuidv4(), startTime: "09:00", endTime: "17:00" },
-              ],
+              workingHours: [...day.workingHours, createDefaultWorkingHour()],
             }
           : day
       )
@@ -73,7 +77,10 @@ function WorkingHours() {
                             className="flex items-center gap-6"
                             key={workingHour.id}
                           >
-                            <RangeInput />
+                            <RangeInput
+                              dayname={day.dayname}
+                              workingHour={workingHour}
+                            />
                             <Trash2
                               className="cursor-pointer text-gray-600"
                               size={20}
@@ -118,7 +125,8 @@ function WorkingHours() {
                     JSON.stringify(workingHours)
                   )
                 }
-                className=" text-gray-50 bg-blue-600 px-4 py-1"
+                className=" text-gray-50 bg-blue-600 px-4 py-1 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={!checkAllValid(workingHours)}
               >
                 Update
               </button>

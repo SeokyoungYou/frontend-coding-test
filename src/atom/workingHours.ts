@@ -8,9 +8,18 @@ import {
   weekdays,
 } from "../util/workingHoursUtil";
 
+export const createDefaultWorkingHour = () => {
+  return {
+    id: uuidv4(),
+    startTime: "09:00",
+    endTime: "17:00",
+    isValid: true,
+  };
+};
+
 const defaultWorkingHours = Object.values(weekdays).map((day) => ({
   dayname: day,
-  workingHours: [{ id: uuidv4(), startTime: "09:00", endTime: "17:00" }],
+  workingHours: [createDefaultWorkingHour()],
 }));
 
 export const initialWorkingHours = localStorage.getItem(WORKING_HOURS_KEY)
