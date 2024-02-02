@@ -1,7 +1,47 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Plus, Trash2 } from "lucide-react";
 import RangeInput from "./components/RangeInput";
+import { workingHoursAtom } from "./atom/workingHours";
+
+import { useAtom } from "jotai";
+import { WeekDays } from "./util/time";
+import { v4 as uuidv4 } from "uuid";
 
 function WorkingHours() {
+  const [workingHours, setWorkingHours] = useAtom(workingHoursAtom);
+
+  console.log("workingHours", workingHours);
+
+  const addWorkingHour = (dayName: WeekDays) => {
+    setWorkingHours((prevHours) =>
+      prevHours.map((day) =>
+        day.dayname === dayName
+          ? {
+              ...day,
+              workingHours: [
+                ...day.workingHours,
+                { id: uuidv4(), startTime: "09:00", endTime: "17:00" },
+              ],
+            }
+          : day
+      )
+    );
+  };
+
+  const deleteWorkingHour = (dayName: WeekDays, workingHourId: string) => {
+    setWorkingHours((prevHours) =>
+      prevHours.map((day) =>
+        day.dayname === dayName
+          ? {
+              ...day,
+              workingHours: day.workingHours.filter(
+                (workingHour) => workingHour.id !== workingHourId
+              ),
+            }
+          : day
+      )
+    );
+  };
+
   return (
     <div>
       <h1>2번 과제 - WorkingHours</h1>
@@ -12,17 +52,48 @@ function WorkingHours() {
             className={`pb-4 flex items-center justify-between w-full ${borderBottom}`}
           >
             <span className="font-semibold">Set your weekly hours</span>
-            <ChevronDown className=" text-slate-600" size={20} />
+            <ChevronDown className=" text-gray-600" size={20} />
           </div>
           <ul>
-            {weekdays.map((day) => (
+            {workingHours.map((day) => (
               <li
-                className={`${borderBottom} items-center gap-4  flex py-4`}
-                key={day}
+                className={`${borderBottom}  gap-4  flex py-4`}
+                key={day.dayname}
               >
-                <span className=" w-28 text-start">{day}</span>
-                <div className="">
-                  <RangeInput />
+                <span className="pt-2 w-28 text-start">{day.dayname}</span>
+
+                <div className="flex flex-col gap-4">
+                  {day.workingHours.length > 0 ? (
+                    <>
+                      {day.workingHours.map((workingHour) => (
+                        <div
+                          className="flex items-center gap-6"
+                          key={workingHour.id}
+                        >
+                          <RangeInput />
+                          <Trash2
+                            className="cursor-pointer text-gray-600"
+                            size={20}
+                            onClick={() =>
+                              deleteWorkingHour(day.dayname, workingHour.id)
+                            }
+                          />
+
+                          <Plus
+                            className="cursor-pointer text-gray-600"
+                            size={20}
+                            onClick={() => addWorkingHour(day.dayname)}
+                          />
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <Plus
+                      className="cursor-pointer text-gray-600  mt-2"
+                      size={20}
+                      onClick={() => addWorkingHour(day.dayname)}
+                    />
+                  )}
                 </div>
               </li>
             ))}
@@ -35,14 +106,4 @@ function WorkingHours() {
 
 export default WorkingHours;
 
-const borderBottom = "border border-b-slate-200 border-x-0 border-t-0";
-
-const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+const borderBottom = "border border-b-gray-200 border-x-0 border-t-0";
