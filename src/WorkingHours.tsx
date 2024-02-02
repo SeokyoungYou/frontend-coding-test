@@ -1,14 +1,13 @@
 import { ChevronDown } from "lucide-react";
+import RangeInput from "./components/RangeInput";
 
 function WorkingHours() {
   return (
     <div>
       <h1>2번 과제 - WorkingHours</h1>
-      <section className="flex mt-16 px-12 justify-center">
-        <span className=" flex-none" style={{ flexBasis: "20%" }}>
-          Working hour
-        </span>
-        <div className="flex flex-col" style={{ flexBasis: "80%" }}>
+      <section className="flex mt-16 px-12 justify-center gap-12">
+        <span className=" flex-none w-2/10">Working hour</span>
+        <div className="flex flex-col flex-grow w-8/10">
           <div
             className={`pb-4 flex items-center justify-between w-full ${borderBottom}`}
           >
@@ -18,10 +17,13 @@ function WorkingHours() {
           <ul>
             {weekdays.map((day) => (
               <li
-                className={`${borderBottom} items-center  flex py-4`}
+                className={`${borderBottom} items-center gap-4  flex py-4`}
                 key={day}
               >
-                <span>{day}</span>
+                <span className=" w-28 text-start">{day}</span>
+                <div className="">
+                  <RangeInput />
+                </div>
               </li>
             ))}
           </ul>
