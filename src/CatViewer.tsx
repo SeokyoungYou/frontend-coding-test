@@ -1,11 +1,7 @@
 import { useAtom } from "jotai";
 import { ImageType, catViewerAtom } from "./atom/catViewer";
 import axios from "axios";
-import {
-  BlueStyleImage,
-  GreenStyleImage,
-  RedStyleImage,
-} from "./components/ImageBox";
+import { ColumnOne, ColumnTwo, ColumnThree } from "./components/ImageBox";
 
 function CatViewer() {
   const [catData, setCatData] = useAtom(catViewerAtom);
@@ -27,28 +23,6 @@ function CatViewer() {
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const ColumnOne = ({ image, index }: { image: ImageType; index: number }) => {
-    const components = [RedStyleImage, RedStyleImage, GreenStyleImage];
-    const Component = components[index % components.length];
-    return <Component image={image} />;
-  };
-  const ColumnTwo = ({ image, index }: { image: ImageType; index: number }) => {
-    const components = [BlueStyleImage, GreenStyleImage, RedStyleImage];
-    const Component = components[index % components.length];
-    return <Component image={image} />;
-  };
-  const ColumnThree = ({
-    image,
-    index,
-  }: {
-    image: ImageType;
-    index: number;
-  }) => {
-    const components = [GreenStyleImage, RedStyleImage, BlueStyleImage];
-    const Component = components[index % components.length];
-    return <Component image={image} />;
   };
 
   return (
