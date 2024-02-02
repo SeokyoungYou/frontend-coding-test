@@ -1,14 +1,14 @@
 import { atom } from "jotai";
 
-type Response = {
+export type ImageType = {
   id: string;
   url: string;
   width: number;
   height: number;
-}[];
+};
 
 type CatDataState = {
-  images: Response[];
+  images: ImageType[];
   currentPage: number;
 };
 
