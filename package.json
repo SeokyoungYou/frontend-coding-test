@@ -9,6 +9,7 @@
     "@types/react": "^18.2.51",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
+    "axios": "^1.6.7",
     "jotai": "^2.6.4",
     "lodash.isequal": "^4.5.0",
     "lucide-react": "^0.321.0",
