@@ -7,13 +7,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <nav
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-          }}
-        >
+        <nav className=" fixed top-0 left-0 bg-slate-100 h-full p-4 flex flex-col gap-8">
           <ul>
             <li>
               <Link to="/cat-viewer">CatViewer</Link>
