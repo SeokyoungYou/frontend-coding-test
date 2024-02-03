@@ -7,10 +7,10 @@ import {
 import { ColumnOne, ColumnTwo, ColumnThree } from "./components/ImageBox";
 import useQueryCat from "./hooks/useQueryCat";
 import React from "react";
-import { MoreHorizontal } from "lucide-react";
+import { AlertCircle, MoreHorizontal } from "lucide-react";
 
 function CatViewer() {
-  const { catData, loading } = useQueryCat();
+  const { catData, loading, error, fetchCats } = useQueryCat();
   const column1 = catData.images.filter((_, index) => index % 3 === 0);
   const column2 = catData.images.filter((_, index) => index % 3 === 1);
   const column3 = catData.images.filter((_, index) => index % 3 === 2);
@@ -66,6 +66,37 @@ function CatViewer() {
             className="w-full h-full object-contain cursor-pointer"
             style={imageStyle}
           />
+        </div>
+      )}
+
+      {error && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center"
+          onClick={handleCloseModal}
+        >
+          <section className="bg-white z-50  px-24 py-16 rounded-md flex items-center justify-center gap-4 flex-col">
+            <div className="flex gap-2 items-center">
+              <AlertCircle size={16} color="black" />
+              <span className=" text-lg font-semibold">Error occured</span>
+            </div>
+
+            <span className=" text-gray-600 whitespace-pre">{error}</span>
+
+            <div className=" flex gap-6">
+              <button
+                onClick={fetchCats}
+                className="w-24 rounded-md py-2 bg-blue-700 text-gray-50"
+              >
+                retry
+              </button>
+              <button
+                onClick={() => window.location.reload()}
+                className="w-24 rounded-md py-2  text-blue-700 border border-blue-700"
+              >
+                refresh
+              </button>
+            </div>
+          </section>
         </div>
       )}
     </div>

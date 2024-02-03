@@ -7,6 +7,7 @@ const IMAGE_LOAD_UNIT = 30;
 function useQueryCat() {
   const [catData, setCatData] = useAtom(catViewerAtom);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<null | string>(null);
 
   const fetchCats = useCallback(async () => {
     if (loading) return;
@@ -16,15 +17,21 @@ function useQueryCat() {
       const response = await axios.get(
         `${process.env.REACT_APP_CAT_API_URL}?limit=${IMAGE_LOAD_UNIT}&page=${catData.currentPage}&api_key=${process.env.REACT_APP_CAT_API_KEY}`
       );
-      const newCats = response.data;
 
-      //   TODO: 서버측 에러 대응
-      setCatData((prev) => ({
-        images: [...prev.images, ...newCats],
-        currentPage: prev.currentPage + 1,
-      }));
+      if (response && response.data) {
+        setError(null);
+
+        setCatData((prev) => ({
+          images: [...prev.images, ...response.data],
+          currentPage: prev.currentPage + 1,
+        }));
+
+        return;
+      }
+
+      setError("Failed to load new cats.\n The response was not as expected.");
     } catch (error) {
-      console.error(error);
+      setError("An error occurred while fetching cats.");
     }
 
     setLoading(false);
@@ -53,6 +60,6 @@ function useQueryCat() {
     }
   }, [catData.currentPage, fetchCats]);
 
-  return { catData, loading, fetchCats };
+  return { catData, loading, fetchCats, error };
 }
 export default useQueryCat;

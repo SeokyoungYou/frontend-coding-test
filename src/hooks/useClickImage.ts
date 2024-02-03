@@ -13,7 +13,7 @@ function useClickImage() {
 
   const handleImageClick =
     (image: ImageType) => (event: React.MouseEvent<HTMLImageElement>) => {
-      const target = event.currentTarget as HTMLElement;
+      const target = event.currentTarget;
       const rect = target.getBoundingClientRect();
       setSelectedImage(image);
       const initialStyle = {
