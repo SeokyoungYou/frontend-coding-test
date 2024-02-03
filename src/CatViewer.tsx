@@ -1,7 +1,14 @@
 import { useAtom } from "jotai";
-import { ImageType, catViewerAtom } from "./atom/catViewer";
+import {
+  catOriginalStyleAtom,
+  catSelectedImageAtom,
+  catSelectedStyleAtom,
+  catViewerAtom,
+} from "./atom/catViewer";
 import axios from "axios";
 import { ColumnOne, ColumnTwo, ColumnThree } from "./components/ImageBox";
+
+const IMAGE_LOAD_UNIT = 30;
 
 function CatViewer() {
   const [catData, setCatData] = useAtom(catViewerAtom);
@@ -9,11 +16,24 @@ function CatViewer() {
   const column2 = catData.images.filter((_, index) => index % 3 === 1);
   const column3 = catData.images.filter((_, index) => index % 3 === 2);
 
+  const [selectedImage, setSelectedImage] = useAtom(catSelectedImageAtom);
+  const [imageStyle, setImageStyle] = useAtom(catSelectedStyleAtom);
+  const [originalStyle, setOriginalStyle] = useAtom(catOriginalStyleAtom);
+
+  const handleCloseModal = () => {
+    setImageStyle(originalStyle);
+
+    setTimeout(() => {
+      setSelectedImage(null);
+      setImageStyle({});
+      setOriginalStyle({});
+    }, 300);
+  };
+
   const fetchMoreCats = async () => {
     try {
       const response = await axios.get(
-        //   `${process.env.REACT_APP_CAT_API_URL}?limit=10&page=${catData.currentPage}&api_key=${API_KEY}`
-        "https://api.thecatapi.com/v1/images/search?limit=10"
+        `${process.env.REACT_APP_CAT_API_URL}?limit=${IMAGE_LOAD_UNIT}&page=${catData.currentPage}&api_key=${process.env.REACT_APP_CAT_API_KEY}`
       );
       const newCats = response.data;
       setCatData((prev) => ({
@@ -48,6 +68,19 @@ function CatViewer() {
         </div>
       </section>
       <button onClick={fetchMoreCats}>fetch more</button>
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={handleCloseModal}
+        >
+          <img
+            src={selectedImage.url}
+            alt={`cat-fullscreen-${selectedImage.id}`}
+            className="w-full h-full object-contain cursor-pointer"
+            style={imageStyle}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -16,3 +16,7 @@ export const catViewerAtom = atom<CatDataState>({
   images: [],
   currentPage: 0,
 });
+
+export const catSelectedImageAtom = atom<ImageType | null>(null);
+export const catOriginalStyleAtom = atom({});
+export const catSelectedStyleAtom = atom({});
