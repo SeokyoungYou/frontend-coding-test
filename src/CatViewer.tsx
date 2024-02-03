@@ -48,8 +48,8 @@ function CatViewer() {
   return (
     <div className="flex flex-col items-center ">
       <h1>1번 과제 - CatViewer</h1>
-      <section className="flex mt-16  max-w-lg items-center  justify-center">
-        <div className="grid grid-cols-3 gap-4 ">
+      <section className="flex mt-16 max-w-[1200px] items-center  justify-center">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 md:grid-cols-2 gap-4 ">
           <div key="cat-col-1" className="flex flex-col gap-4">
             {column1.map((image, imageIndex) => (
               <ColumnOne key={image.id} image={image} index={imageIndex} />
