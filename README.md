@@ -124,6 +124,11 @@ function useClickImage() {
 export default useClickImage;
 ```
 
+- 반응형
+![Feb-04-2024 15-37-17](https://github.com/SeokyoungYou/frontend-coding-test/assets/79842380/bbff7952-1fb4-475f-80ac-e5d6c8113ee1)
+
+
+
 #### 에러 핸들링
 
 - 서버 상태를 관리하는 비즈니스 훅을 추출합니다.
@@ -170,10 +175,15 @@ export default useQueryCat;
 
 ```
 
+- 에러 UI
+![image](https://github.com/SeokyoungYou/frontend-coding-test/assets/79842380/7159fa89-a8dc-4c2e-aa81-024e9c03ff8c)
+
+
 ### 추가 UI/UX 개선
 
 - 이미지 hover 시 확대
 - 무한 스크롤에 대한 loading indicator 추가
+![Feb-04-2024 15-37-07](https://github.com/SeokyoungYou/frontend-coding-test/assets/79842380/49663c54-3fa2-4d4f-a6be-8b13f9a00447)
 
 ## 2. Working Hours
 
