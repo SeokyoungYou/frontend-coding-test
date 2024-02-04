@@ -11,9 +11,9 @@ import { AlertCircle, MoreHorizontal } from "lucide-react";
 
 function CatViewer() {
   const { catData, loading, error, fetchCats } = useQueryCat();
-  const column1 = catData.images.filter((_, index) => index % 3 === 0);
-  const column2 = catData.images.filter((_, index) => index % 3 === 1);
-  const column3 = catData.images.filter((_, index) => index % 3 === 2);
+  const [column1, column2, column3] = [0, 1, 2].map((columnIndex) =>
+    catData.images.filter((_, index) => index % 3 === columnIndex)
+  );
 
   const [selectedImage, setSelectedImage] = useAtom(catSelectedImageAtom);
   const [imageStyle, setImageStyle] = useAtom(catSelectedStyleAtom);
@@ -44,7 +44,6 @@ function CatViewer() {
               <ColumnTwo key={image.id} image={image} index={imageIndex} />
             ))}
           </div>
-
           <div key="cat-col-3" className="flex flex-col gap-4">
             {column3.map((image, imageIndex) => (
               <ColumnThree key={image.id} image={image} index={imageIndex} />

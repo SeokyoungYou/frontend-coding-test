@@ -1,70 +1,302 @@
 # Yess Web Frontend 사전 과제 기반 코드 (CRA 활용)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 사용 라이브러리
 
-## Available Scripts
+- TypeScript
+- 상태관리:[Jotai](https://jotai.org/)
+- 스타일: TailwindCSS, lucide-react(아이콘)
+- axios, lodash.isequal, uuid
 
-In the project directory, you can run:
+## 1. Cat Viewer
 
-### `npm start`
+### 요구사항
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+#### 레이아웃
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- 응답 데이터를 3열로 분리합니다.
 
-### `npm test`
+```tsx
+  const [column1, column2, column3] = [0, 1, 2].map((columnIndex) =>
+    catData.images.filter((_, index) => index % 3 === columnIndex)
+  );
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  ...
 
-### `npm run build`
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
+        <div key="cat-col-1" className="flex flex-col gap-4">
+        {column1.map((image, imageIndex) => (
+            <ColumnOne key={image.id} image={image} index={imageIndex} />
+        ))}
+        </div>
+        <div key="cat-col-2" className="flex flex-col gap-4">
+        {column2.map((image, imageIndex) => (
+            <ColumnTwo key={image.id} image={image} index={imageIndex} />
+        ))}
+        </div>
+        <div key="cat-col-3" className="flex flex-col gap-4">
+        {column3.map((image, imageIndex) => (
+            <ColumnThree key={image.id} image={image} index={imageIndex} />
+        ))}
+        </div>
+    </div>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- 각 열의 이미지를 순서에 따라 높이로 구분하여 그립니다.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```tsx
+function Image({ image, height }: { image: ImageType; height: string }) {
+  const handleImageClick = useClickImage();
 
-### `npm run eject`
+  return (
+    <div className="relative overflow-hidden">
+      <img
+        key={image.id}
+        src={image.url}
+        alt={`cat-${image.id}`}
+        className={`w-full object-cover cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110 ${height}`}
+        onClick={handleImageClick(image)}
+      />
+    </div>
+  );
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+function ColumnOne({ image, index }: { image: ImageType; index: number }) {
+  const heightClasses = ["h-40", "h-40", "h-36"];
+  const height = heightClasses[index % heightClasses.length];
+  return <Image image={image} height={height} />;
+}
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### 이미지 확대 기능
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- 이미지 확대 기능을 위한 3 개의 상태를 생성하였습니다.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```tsx
+const [selectedImage, setSelectedImage] = useAtom(catSelectedImageAtom); // 선택된 이미지  응답값
+const [imageStyle, setImageStyle] = useAtom(catSelectedStyleAtom);
+const [originalStyle, setOriginalStyle] = useAtom(catOriginalStyleAtom);
+```
 
-## Learn More
+- 이미지 클릭에 대한 애니메이션 비즈니스 로직을 분리합니다
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```ts
+function useClickImage() {
+  const setSelectedImage = useSetAtom(catSelectedImageAtom);
+  const setSelecteedImageStyle = useSetAtom(catSelectedStyleAtom);
+  const setOriginalStyle = useSetAtom(catOriginalStyleAtom);
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  const handleImageClick =
+    (image: ImageType) => (event: React.MouseEvent<HTMLImageElement>) => {
+      const target = event.currentTarget;
+      const rect = target.getBoundingClientRect();
+      setSelectedImage(image);
+      const initialStyle = {
+        position: "fixed",
+        top: `${rect.top}px`,
+        left: `${rect.left}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+        transition: "all 0.3s ease-in-out",
+        zIndex: 50,
+        transform: "translate(0, 0)",
+      };
+      setSelecteedImageStyle(initialStyle);
+      setOriginalStyle(initialStyle);
 
-### Code Splitting
+      requestAnimationFrame(() => {
+        setSelecteedImageStyle({
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          width: "100vw",
+          height: "100vh",
+          transform: "translate(-50%, -50%)",
+          transition: "all 0.3s ease-in-out",
+          zIndex: 50,
+        });
+      });
+    };
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+  return handleImageClick;
+}
 
-### Analyzing the Bundle Size
+export default useClickImage;
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+#### 에러 핸들링
 
-### Making a Progressive Web App
+- 서버 상태를 관리하는 비즈니스 훅을 추출합니다.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```tsx
+function useQueryCat() {
+  const [catData, setCatData] = useAtom(catViewerAtom);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<null | string>(null);
 
-### Advanced Configuration
+  const fetchCats = useCallback(async () => {
+    if (loading) return;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_CAT_API_URL}?limit=${IMAGE_LOAD_UNIT}&page=${catData.currentPage}&api_key=${process.env.REACT_APP_CAT_API_KEY}`
+      );
 
-### Deployment
+      if (response && response.data) {
+        setError(null);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+        setCatData((prev) => ({
+          images: [...prev.images, ...response.data],
+          currentPage: prev.currentPage + 1,
+        }));
 
-### `npm run build` fails to minify
+        return;
+      }
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+      setError("Failed to load new cats.\n The response was not as expected."); // Response 에러 처리
+    } catch (error) {
+      setError("An error occurred while fetching cats."); // 호출 에러 처리
+    }
+
+    setLoading(false);
+  }, [catData.currentPage, loading, setCatData]);
+
+    ...
+
+  return { catData, loading, fetchCats, error };
+}
+export default useQueryCat;
+
+```
+
+### 추가 UI/UX 개선
+
+- 이미지 hover 시 확대
+- 무한 스크롤에 대한 loading indicator 추가
+
+## 2. Working Hours
+
+### 요구사항
+
+- RangeInput CRUD: 하나의 atom에서 관리. uuid 사용
+
+```ts
+export const createDefaultWorkingHour = () => {
+  return {
+    id: uuidv4(),
+    startTime: "09:00",
+    endTime: "17:00",
+    isValid: true,
+  };
+};
+
+...
+
+  const addWorkingHour = (dayName: WeekDays) => {
+    setWorkingHours((prevHours) =>
+      prevHours.map((day) =>
+        day.dayname === dayName
+          ? {
+              ...day,
+              workingHours: [...day.workingHours, createDefaultWorkingHour()],
+            }
+          : day
+      )
+    );
+  };
+
+  const deleteWorkingHour = (dayName: WeekDays, workingHourId: string) => {
+    setWorkingHours((prevHours) =>
+      prevHours.map((day) =>
+        day.dayname === dayName
+          ? {
+              ...day,
+              workingHours: day.workingHours.filter(
+                (workingHour) => workingHour.id !== workingHourId
+              ),
+            }
+          : day
+      )
+    );
+  };
+
+
+...
+
+    const updateWorkingHour = React.useCallback(() => {
+    setWorkingHours((prevHours) =>
+        prevHours.map((day) =>
+        day.dayname === dayname
+            ? {
+                ...day,
+                workingHours: day.workingHours.map((hour) =>
+                hour.id === workingHour.id
+                    ? {
+                        ...hour,
+                        startTime,
+                        endTime,
+                        isValid: startTime <= endTime,
+                    }
+                    : hour
+                ),
+            }
+            : day
+        )
+    );
+    }, [dayname, setWorkingHours, workingHour.id, startTime, endTime]);
+```
+
+- Update 클릭 시 변경사항 저장 및 로드
+
+```tsx
+<button
+  onClick={() =>
+    localStorage.setItem(WORKING_HOURS_KEY, JSON.stringify(workingHours))
+  }
+  className=" text-gray-50 bg-blue-600 px-4 py-1 disabled:bg-gray-400 disabled:cursor-not-allowed"
+  disabled={!checkAllValid(workingHours)}
+>
+  Update
+</button>
+
+...
+
+export const initialWorkingHours = localStorage.getItem(WORKING_HOURS_KEY)
+  ? JSON.parse(localStorage.getItem(WORKING_HOURS_KEY) || "")
+  : defaultWorkingHours;
+
+export const workingHoursAtom =
+  atomWithReset<DailyWorkingHours[]>(initialWorkingHours);
+```
+
+### 선택 요구사항
+
+- RangeInput 에러처리: isValid 속성 활용
+
+```tsx
+export type WorkingHour = {
+  id: string;
+  startTime: string;
+  endTime: string;
+  isValid: boolean;
+};
+
+...
+ {
+    id,
+    startTime,
+    endTime,
+    isValid: startTime <= endTime,
+ }
+```
+
+- Update 버튼의 에러 처리
+
+```ts
+export const checkAllValid = (workingHours: DailyWorkingHours[]) => {
+  return workingHours.every((day) =>
+    day.workingHours.every((workingHour) => workingHour.isValid)
+  );
+};
+```
