@@ -279,8 +279,10 @@ export const initialWorkingHours = localStorage.getItem(WORKING_HOURS_KEY)
 export const workingHoursAtom =
   atomWithReset<DailyWorkingHours[]>(initialWorkingHours);
 ```
+![Feb-04-2024 15-40-10](https://github.com/SeokyoungYou/frontend-coding-test/assets/79842380/5e9f0b6b-2a30-4440-87a4-e8b9f15d00bb)
 
 ### 선택 요구사항
+![Feb-04-2024 15-39-37](https://github.com/SeokyoungYou/frontend-coding-test/assets/79842380/dfbdcca8-3714-4541-ad6b-ffeb6fcad9eb)
 
 - RangeInput 에러처리: isValid 속성 활용
 
