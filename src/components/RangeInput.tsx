@@ -1,5 +1,4 @@
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
 import SelectorInput from "./SelectorInput";
 import { WorkingHour } from "../util/workingHoursUtil";
 import { useSetAtom } from "jotai";
@@ -11,76 +10,51 @@ type SelectorInputProps = {
 };
 
 function RangeInput({ workingHour, dayname }: SelectorInputProps) {
-  const { control, watch, handleSubmit } = useForm<WorkingHour>({
-    defaultValues: workingHour,
-    mode: "onChange",
-  });
-
-  const watchStartTime = watch("startTime");
-  const watchEndTime = watch("endTime");
+  const [startTime, setStartTime] = React.useState(workingHour.startTime);
+  const [endTime, setEndTime] = React.useState(workingHour.endTime);
   const setWorkingHours = useSetAtom(workingHoursAtom);
 
-  const updateWorkingHour = React.useCallback(
-    (newStartTime: string, newEndTime: string) => {
-      setWorkingHours((prevHours) =>
-        prevHours.map((day) =>
-          day.dayname === dayname
-            ? {
-                ...day,
-                workingHours: day.workingHours.map((hour) =>
-                  hour.id === workingHour.id
-                    ? {
-                        ...hour,
-                        startTime: newStartTime,
-                        endTime: newEndTime,
-                        isValid: newStartTime <= newEndTime,
-                      }
-                    : hour
-                ),
-              }
-            : day
-        )
-      );
-    },
-    [dayname, setWorkingHours, workingHour.id]
-  );
+  const updateWorkingHour = React.useCallback(() => {
+    setWorkingHours((prevHours) =>
+      prevHours.map((day) =>
+        day.dayname === dayname
+          ? {
+              ...day,
+              workingHours: day.workingHours.map((hour) =>
+                hour.id === workingHour.id
+                  ? {
+                      ...hour,
+                      startTime,
+                      endTime,
+                      isValid: startTime <= endTime,
+                    }
+                  : hour
+              ),
+            }
+          : day
+      )
+    );
+  }, [dayname, setWorkingHours, workingHour.id, startTime, endTime]);
 
   React.useEffect(() => {
-    if (watchStartTime && watchEndTime) {
-      updateWorkingHour(watchStartTime, watchEndTime);
-    }
-  }, [watchStartTime, watchEndTime, updateWorkingHour]);
+    updateWorkingHour();
+  }, [startTime, endTime, updateWorkingHour]);
 
   return (
     <div className="flex flex-col">
-      <form
-        onSubmit={handleSubmit(() => {})}
-        className="flex gap-2 items-center"
-      >
-        <Controller
-          name="startTime"
-          control={control}
-          render={({ field }) => (
-            <SelectorInput
-              time={field.value}
-              setTime={field.onChange}
-              isError={!workingHour.isValid}
-            />
-          )}
+      <div className="flex gap-2 items-center">
+        <SelectorInput
+          time={startTime}
+          setTime={(newTime) => setStartTime(newTime)}
+          isError={!workingHour.isValid}
         />
         <span>-</span>
-        <Controller
-          name="endTime"
-          control={control}
-          render={({ field }) => (
-            <SelectorInput
-              time={field.value}
-              setTime={field.onChange}
-              isError={!workingHour.isValid}
-            />
-          )}
+        <SelectorInput
+          time={endTime}
+          setTime={(newTime) => setEndTime(newTime)}
+          isError={!workingHour.isValid}
         />
-      </form>
+      </div>
     </div>
   );
 }
